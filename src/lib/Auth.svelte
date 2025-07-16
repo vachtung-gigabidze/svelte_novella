@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { supabase } from '$lib/supabase';
-  import { goto } from '$app/navigation';
+  import { supabase } from './supabase';
+
   import { onMount } from 'svelte';
 
   let isTelegram = false;
@@ -26,7 +26,7 @@
       });
 
       if (error) throw error;
-      goto('/stories');
+
     } catch (err) {
       console.error('Auth error:', err);
       alert('Ошибка авторизации');
