@@ -20,6 +20,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.51.0",
-    "@sveltejs/kit": "^2.24.0"
+    "@sveltejs/kit": "^2.24.0",
+    "prettier-plugin-svelte": "^3.4.0",
+    "rive-canvas": "^0.7.6",
+    "svelte-canvas": "^2.0.2"
   }
 }
