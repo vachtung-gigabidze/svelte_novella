@@ -15,6 +15,7 @@
   // Инициализация Supabase (вынесите в отдельный файл, например, supabase.js)
 
   import { supabase }  from './lib/supabase.js' ;
+  import Auth from "./lib/Auth.svelte";
 
   let isTelegram = false;
   let isLoading = false;
@@ -69,6 +70,7 @@
     </p>
   {:else}
     <Rive />
+    <Auth />
     <button
             on:click={handleTelegramAuth}
             disabled={isLoading}
