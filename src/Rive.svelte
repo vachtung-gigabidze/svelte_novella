@@ -1,88 +1,49 @@
-<script lang="ts">
-    import { Canvas, Layer } from "svelte-canvas";
-    import { loadRiveFile } from "./lib/loadRiveFile";
+<script>
+    import { onMount } from "svelte";
+    import * as rive from "@rive-app/canvas";
 
-    export let fileName;
-    let animations = [];
-    export let width = 500, height = 500;
-    export let scrub, startTime = 0;
-    export let playRate = 1;
+    let isJumpingInput = $state();
+    let canvas = $state();
 
-    let rive, file, artboard, renderer, lastTime, storedContext, animationInstances = [];
+    onMount(() => {
+        if (!canvas) return;
 
-    //load a rive file async, let us await this promise and then render it!
-    const loadAnimation = loadRiveFile(fileName).then(({ rive: riveInstance, file: fileInstance }) => {
-        rive = riveInstance;
-        file = fileInstance;
-    });
-
-    //setup is run on init of canvas, let's set up our rive renderer and fetch all animation instances
-    const setup = ({ context }) => {
-        storedContext = context;
-        artboard = file.defaultArtboard();
-        renderer = new rive.CanvasRenderer(context);
-
-        animations.forEach(((animationName) => {
-            animationInstances.push(new rive.LinearAnimationInstance(artboard.animationByName(animationName)));
-        }));
-
-        artboard.advance(0);
-    };
-
-    // for scrubbing to work we use an empty render function,
-    // we then implicitly clear the canvas before drawing and set autoclear = false on the Canvas
-    const redraw = (context) => {
-        context.clearRect(0, 0, width, height);
-        context.save();
-        renderer.align(rive.Fit.contain, rive.Alignment.center, {
-            minX: 0,
-            minY: 0,
-            maxX: width,
-            maxY: height
-        }, artboard.bounds);
-        artboard.draw(renderer);
-        context.restore();
-    };
-
-    //if we scrub check that we have initialized the context
-    $: if (typeof (scrub) != "undefined" && storedContext) {
-
-        //this animation had a different startTime, let's use that
-        animationInstances.forEach((instance) => {
-            instance.time = startTime;
-            instance.advance(scrub);
-            instance.apply(artboard, 1.0);
+        // Create the Rive instance
+        const riveInstance = new rive.Rive({
+            src: "https://public.rive.app/community/runtime-files/186-341-flame-and-spark.riv",
+            canvas,
+            autoplay: true,
+            // stateMachines: "blob",
+            // onLoad: () => {
+            //     riveInstance.resizeDrawingSurfaceToCanvas();
+            //     const inputs = riveInstance.stateMachineInputs("blob");
+            //     // Reference the inputs we defined in Rive
+            //     isJumpingInput = inputs.find((i) => i.name === "isJumping");
+            // },
         });
-        artboard.time = startTime;
-        artboard.advance(scrub);
 
-        redraw(storedContext);
-    }
-
-    //play all selected animations normally
-    $: render = $t && (({ context, width, height }) => {
-
-        if (!lastTime) {
-            lastTime = $t;
-        }
-        const elapsedTime = ($t - lastTime) / 1000;
-        lastTime = $t;
-
-        //this mixes all specified animations when playing.
-        const advanceRate = elapsedTime * playRate;
-        animationInstances.forEach((instance) => {
-            instance.advance(advanceRate);
-            instance.apply(artboard, 1.0);
-        });
-        artboard.advance(advanceRate);
-
-        redraw(context);
+        // Cleanup the Rive instance when the component unmounts
+        return () => {
+            riveInstance.cleanup();
+        };
     });
 </script>
 
-<Canvas {width} {height} autoclear={false}>
-    {#await loadAnimation then _}
-        <!--if scrub just assign an empty function since we don't want it to play-->
-        <Layer {setup} render={typeof(scrub) != "undefined" ? () => {} : render} />
-    {/await}
-</Canvas>
+<div class="main-container">
+    <canvas bind:this={canvas} width="300" height="300"></canvas>
+    <div class="headline">
+        <p class="title">Привет!</p>
+        <p class="headline-text">Ведутся работы</p>
+    </div>
+<!--    <button-->
+<!--            class="cta"-->
+<!--            onmouseenter={() => {-->
+<!--			if (isJumpingInput) isJumpingInput.value = true;-->
+<!--		}}-->
+<!--            onmouseleave={() => {-->
+<!--			if (isJumpingInput) isJumpingInput.value = false;-->
+<!--		}}-->
+<!--    >-->
+<!--        <p>Hover me</p>-->
+<!--    </button>-->
+</div>

@@ -19,6 +19,7 @@
     "vite": "^7.0.4"
   },
   "dependencies": {
+    "@rive-app/canvas": "^2.30.4",
     "@supabase/supabase-js": "^2.51.0",
     "@sveltejs/kit": "^2.24.0",
     "prettier-plugin-svelte": "^3.4.0",
