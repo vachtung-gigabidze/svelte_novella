@@ -1,10 +1,22 @@
 <script lang="ts">
-    let {name} = $props();
+    import {createState, MyState} from './state.svelte';
+
+    let {name}: { name: string } = $props();
+
+    const myState = createState();
+    const myState2 = new MyState();
 </script>
-<h1>
+<div>
 
-    Hello {name}
-</h1>
+    <h1>
+
+        {name ? name : "User"} Form
+    </h1>
+    <button onclick={()=>myState.up()}>{myState.value}</button>
+    <button onclick={()=>myState2.up()}>{myState2.value}</button>
+</div>
 <style>
-
+    div {
+        background: red;
+    }
 </style>
