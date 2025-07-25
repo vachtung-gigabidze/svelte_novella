@@ -1,6 +1,7 @@
 <script lang="ts">
 
     import Header from "./Header.svelte";
+    import Game from "./Game.svelte";
 
     let form_state = $state({
             answers: {}, step: 0, error: ''
@@ -46,25 +47,26 @@
     // });
 
 </script>
-<Header name={form_state.answers.name}/>
-<main>
-    <div>
-        {#if form_state.step >= QUESTIONS.length}
-            <p>Спасибо</p>
-            {:else}
-        <p>Step: {form_state.step + 1}</p>
-        {#each QUESTIONS as question , i (question.id)}
-            {#if (i === form_state.step)}
-                {@render form_step(question)}
-            {/if}
-        {/each}
-        {/if}
-    </div>
-    <p class="error">
-        {form_state.error}
-    </p>
-    <!--{JSON.stringify(form_state)}-->
-</main>
+<!--<Header name={form_state.answers.name}/>-->
+<Game />
+<!--<main>-->
+<!--    <div>-->
+<!--        {#if form_state.step >= QUESTIONS.length}-->
+<!--            <p>Спасибо</p>-->
+<!--            {:else}-->
+<!--        <p>Step: {form_state.step + 1}</p>-->
+<!--        {#each QUESTIONS as question , i (question.id)}-->
+<!--            {#if (i === form_state.step)}-->
+<!--                {@render form_step(question)}-->
+<!--            {/if}-->
+<!--        {/each}-->
+<!--        {/if}-->
+<!--    </div>-->
+<!--    <p class="error">-->
+<!--        {form_state.error}-->
+<!--    </p>-->
+<!--    &lt;!&ndash;{JSON.stringify(form_state)}&ndash;&gt;-->
+<!--</main>-->
 
 {#snippet form_step({question, id, type}: {question:string, id:string, type:string}) }
     <article>
