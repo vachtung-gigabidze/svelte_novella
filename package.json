@@ -10,7 +10,6 @@
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
-
     "@sveltejs/vite-plugin-svelte": "^6.0.0",
     "@tsconfig/svelte": "^5.0.4",
     "svelte": "^5.35.5",
@@ -20,6 +19,7 @@
   },
   "dependencies": {
     "@rive-app/canvas": "^2.30.4",
-    "@supabase/supabase-js": "^2.51.0"
+    "@supabase/supabase-js": "^2.51.0",
+    "@types/telegram-web-app": "^9.0.0"
   }
 }
