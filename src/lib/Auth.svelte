@@ -2,6 +2,12 @@
   import { supabase } from './supabase';
 
   import { onMount } from 'svelte';
+  // import { retrieveRawInitData } from '@telegram-apps/sdk-svelte';
+
+  // import { init, backButton } from '@telegram-apps/sdk-svelte';
+
+  // Initialize the package.
+  // init();
 
   let isTelegram = false;
 
@@ -18,6 +24,7 @@
 
     try {
       const initData = window.Telegram.WebApp.initData;
+      // const initDataRaw = retrieveRawInitData();
 
       const { error } = await supabase.auth.signInWithIdToken({
         provider: 'telegram',
