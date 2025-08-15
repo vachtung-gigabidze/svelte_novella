@@ -7,7 +7,7 @@
 
   let info = $derived(`The button is, ${isBackButtonVisible() ? 'visible' : 'invisible'}`);
 
-  let user = initData.user;
+  let user = $derived(initData.user);
 
   onMount(() => {
     backButton.show();
