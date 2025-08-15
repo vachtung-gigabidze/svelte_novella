@@ -6,6 +6,7 @@
 
   // Initialize the package.
   init();
+  
 </script>
 
 <BackButton />
