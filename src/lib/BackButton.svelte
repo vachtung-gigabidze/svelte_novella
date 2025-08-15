@@ -6,7 +6,7 @@
   const isVisible = useSignal(backButton.isVisible);
 
   let info = $derived(`The button is, ${isBackButtonVisible() ? 'visible' : 'invisible'}`);
-
+  initData.restore();
   let user = $derived(initData.user);
 
   onMount(() => {
