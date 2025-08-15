@@ -1,13 +1,11 @@
-/**
- * Component which controls the Back Button visibility.
- */
+
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { backButton, useSignal } from '@telegram-apps/sdk-svelte';
+  import { backButton, useSignal, isBackButtonVisible } from '@telegram-apps/sdk-svelte';
 
   const isVisible = useSignal(backButton.isVisible);
 
-  $: console.log('The button is', isVisible.value ? 'visible' : 'invisible')
+  let info = $derived(`The button is, ${isBackButtonVisible() ? 'visible' : 'invisible'}`);
 
   onMount(() => {
     backButton.show();
@@ -17,3 +15,5 @@
     backButton.hide();
   });
 </script>
+
+<p>`The button is', {info}`</p>
