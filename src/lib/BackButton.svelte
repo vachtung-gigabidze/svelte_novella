@@ -1,7 +1,7 @@
 
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { backButton, useSignal, isBackButtonVisible, initData } from '@telegram-apps/sdk-svelte';
+  import { backButton, useSignal, isBackButtonVisible, initData, closeMiniApp } from '@telegram-apps/sdk-svelte';
  
   const isVisible = useSignal(backButton.isVisible);
 
@@ -16,6 +16,11 @@
   onDestroy(() => {
     backButton.hide();
   });
+
+  function click() {
+
+  }
 </script>
 
 <p>`{info}  {JSON.stringify(user)}`</p>
+<button onclick={click}>PRESS</button>
