@@ -7,7 +7,8 @@
   const { initDataRaw, initData } = retrieveLaunchParams();
   let information = $derived(initData);
   const bg = window.Telegram.WebApp.backgroundColor;
-  const tgInitData = window.Telegram.WebApp.initDataUnsafe.user;
+  // const tgInitData = window.Telegram.WebApp.initDataUnsafe.user;
+  const first_name = window.Telegram.WebApp.initDataUnsafe.user?.first_name;
   onMount(() => {
     if (window.Telegram && window.Telegram.WebApp) {
       //initData = window.Telegram.WebApp.initDataUnsafe;
@@ -95,5 +96,5 @@
 </script>
 
 <p>BackGround {bg}</p>
-<p>User {JSON.stringify(tgInitData)}</p>
+<p>Привет {first_name}</p>
 <BackButton />
