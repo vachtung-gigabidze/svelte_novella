@@ -95,5 +95,5 @@
 </script>
 
 <p>{bg}</p>
-<p>{JSON.stringify(tgInitData)}</p>
+<p>User {JSON.stringify(tgInitData)}</p>
 <BackButton />
