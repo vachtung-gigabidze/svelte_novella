@@ -94,6 +94,6 @@
   //   }
 </script>
 
-<p>{bg}</p>
+<p>BackGround {bg}</p>
 <p>User {JSON.stringify(tgInitData)}</p>
 <BackButton />
