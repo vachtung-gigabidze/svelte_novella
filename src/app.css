@@ -5,8 +5,9 @@ body {
   padding: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+  align-items: center;  
+  background: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
 }
 
 .App {
