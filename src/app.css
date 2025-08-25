@@ -6,8 +6,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;  
-  background: var(--tg-theme-bg-color);
-  color: var(--tg-theme-text-color);
+  /*background: var(--tg-theme-bg-color);*/
+  /*color: var(--tg-theme-text-color);*/
 }
 
 .App {

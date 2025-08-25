@@ -1,14 +1,9 @@
-<script lang="ts">
-  import Header from "./Header.svelte";
-  import Auth from "./lib/Auth.svelte";
-  import UserName from "./lib/UserName.svelte";
+<script>
 
-  let name = "User Name";
+import App from "./novella/App.svelte";
 </script>
 
-<Header {name} />
-<!-- <Auth/> -->
-<UserName />
-
+<App></App>
 <style>
+
 </style>
