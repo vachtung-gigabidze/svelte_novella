@@ -1,19 +1,32 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--tg-theme-bg-color);
-    color: var(--tg-theme-text-color);
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #222222);
+    margin: 0;
+    padding: 20px;
 }
 
 .container {
-    padding: 20px;
-    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .button {
-    background: var(--tg-theme-button-color);
-    color: var(--tg-theme-button-text-color);
-    padding: 10px 20px;
+    background: var(--tg-theme-button-color, #40a7e3);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    padding: 12px 24px;
     border: none;
     border-radius: 10px;
-    margin: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+}
+
+.error {
+    color: #ff3b30;
+    padding: 10px;
 }

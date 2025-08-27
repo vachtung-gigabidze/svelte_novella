@@ -124,21 +124,22 @@
 </script>
 
 <div class="container">
-    <h1>Мое TMA Приложение</h1>
-    <div id="user-data"></div>
+    <div id="loading" class="loading">Загрузка...</div>
+
     <div id="auth-section" style="display:none;">
-        <button class="button" onclick={authenticate}>Войти через Telegram</button>
-    </div>
-    <div id="content" style="display:none;">
         <h2>Добро пожаловать!</h2>
-        <p>Вы успешно аутентифицированы</p>
+        <div id="user-info"></div>
+        <button class="button" onclick="authenticate()">Войти через Telegram</button>
     </div>
+
+    <div id="content" style="display:none;">
+        <h2>🎉 Вы авторизованы!</h2>
+        <p>Теперь вам доступны все функции приложения</p>
+        <button class="button" onclick="logout()">Выйти</button>
+    </div>
+
+    <div id="error" class="error" style="display:none;"></div>
 </div>
 {#if appError}
     <p class="error">{appError}</p>
 {/if}
-<style>
-    .error {
-        color: red;
-    }
-</style>
