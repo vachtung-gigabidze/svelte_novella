@@ -1,5 +1,5 @@
 <script lang="ts">
-  import App from "./novella/_App.svelte";
+  import App from "./novella/App.svelte";
   // import { onMount } from "svelte";
 
   // let userId: string | null = null;
