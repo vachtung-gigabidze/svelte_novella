@@ -45,6 +45,7 @@
 
     // Аутентификация через Telegram
     async function authenticate() {
+        appError = '';
         try {
             const initData = tg.initData;
             if (!initData) {
@@ -97,6 +98,7 @@
 
             console.log('Protected data loaded:', data);
         } catch (error) {
+            appError = JSON.stringify(error);
             console.error('Error loading protected data:', error);
         }
     }
