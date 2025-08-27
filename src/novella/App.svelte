@@ -69,34 +69,73 @@
     }
   }
 
+  //   // Аутентификация через Telegram
+  //   async function authenticate() {
+  //     try {
+  //       isLoading = true;
+  //       error = "";
+
+  //       if (!telegramUser?.id) {
+  //         throw new Error("Данные Telegram не доступны");
+  //       }
+
+  //       // Создаем учетные данные из данных Telegram
+  //       const email = `tg_${telegramUser.id}@tma.example.com`;
+  //       const password = telegramUser.id.toString();
+
+  //       // Выполняем вход
+  //       const { data: authData, error: authError } =
+  //         await supabase.auth.signInWithPassword({
+  //           email,
+  //           password,
+  //         });
+
+  //       if (authError) throw authError;
+
+  //       user = authData.user;
+  //       session = authData.session;
+
+  //       // Загружаем диалоги после успешной аутентификации
+  //       await loadDialogues();
+  //     } catch (err) {
+  //       error = "Ошибка авторизации: " + err.message;
+  //     } finally {
+  //       isLoading = false;
+  //     }
+  //   }
+
   // Аутентификация через Telegram
   async function authenticate() {
+    // appError = '';
     try {
       isLoading = true;
       error = "";
 
-      if (!telegramUser?.id) {
-        throw new Error("Данные Telegram не доступны");
+      const initData = tg.initData;
+      if (!initData) {
+        throw new Error("Telegram init data not available");
       }
 
-      // Создаем учетные данные из данных Telegram
-      const email = `tg_${telegramUser.id}@tma.example.com`;
-      const password = telegramUser.id.toString();
+      // Вызываем Edge Function для аутентификации
+      const { data, error: invokeError } = await supabase.functions.invoke(
+        "tma-auth",
+        {
+          body: { initData },
+        }
+      );
 
-      // Выполняем вход
-      const { data: authData, error: authError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      if (invokeError) throw invokeError;
+
+      // Устанавливаем сессию в Supabase Client
+      const { error: authError } = await supabase.auth.setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      });
 
       if (authError) throw authError;
-
-      user = authData.user;
-      session = authData.session;
-
       // Загружаем диалоги после успешной аутентификации
       await loadDialogues();
+      // showContent(data.user);
     } catch (err) {
       error = "Ошибка авторизации: " + err.message;
     } finally {
