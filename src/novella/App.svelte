@@ -69,7 +69,7 @@
             showContent(data.user);
 
         } catch (error) {
-            console.log(appError);
+            appError = JSON.stringify(data);
             console.error('Auth error:', error);
             showError('Ошибка авторизации: ' + error.message);
         }
