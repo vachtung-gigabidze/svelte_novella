@@ -129,13 +129,13 @@
     <div id="auth-section" style="display:none;">
         <h2>Добро пожаловать!</h2>
         <div id="user-info"></div>
-        <button class="button" onclick="authenticate()">Войти через Telegram</button>
+        <button class="button" onclick={authenticate}>Войти через Telegram</button>
     </div>
 
     <div id="content" style="display:none;">
         <h2>🎉 Вы авторизованы!</h2>
         <p>Теперь вам доступны все функции приложения</p>
-        <button class="button" onclick="logout()">Выйти</button>
+        <button class="button" onclick={logout}>Выйти</button>
     </div>
 
     <div id="error" class="error" style="display:none;"></div>
