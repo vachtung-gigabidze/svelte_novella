@@ -94,7 +94,9 @@
                 .download('dracula_story.json');
 
             if (error) throw error;
-            appError = JSON.stringify(data);
+            const text = await data.text()
+            const jsonData = JSON.parse(text)
+            appError = JSON.stringify(jsonData);
             console.log('Protected data loaded:', data);
         } catch (error) {
             appError = JSON.stringify(error);
