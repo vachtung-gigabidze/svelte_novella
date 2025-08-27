@@ -89,13 +89,12 @@
     // Загрузка защищенных данных
     async function loadProtectedData() {
         try {
-            const { data, error } = await supabase
-                .from('user_profiles')
-                .select('*')
-                .eq('telegram_id', tg.initDataUnsafe.user.id);
+            const { data, error } = await supabase.storage
+                .from('dracula')
+                .download('dracula_story.json');
 
             if (error) throw error;
-
+            appError = JSON.stringify(data);
             console.log('Protected data loaded:', data);
         } catch (error) {
             appError = JSON.stringify(error);
