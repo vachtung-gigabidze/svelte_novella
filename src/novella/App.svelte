@@ -1,33 +1,45 @@
 <script>
     import {authStore} from './auth.js'
     import { supabase } from './supabase.js'
+    let appError = $state('');
     // Инициализация Telegram Web App
     const tg = window.Telegram.WebApp;
-    let appError = $state('');
+    // const SUPABASE_URL = 'https://your-project.supabase.co';
+    // const SUPABASE_ANON_KEY = 'your-anon-key';
 
-    tg.expand(); // Раскрываем на весь экран
-    tg.enableClosingConfirmation(); // Подтверждение закрытия
+    // const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
-
-    // Проверка аутентификации
+    // Основная функция инициализации
     async function initApp() {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        try {
+            tg.expand();
+            tg.enableClosingConfirmation();
 
-        if (session && session.user) {
-            showContent(session.user);
-        } else {
-            // Показываем кнопку аутентификации
-            document.getElementById('auth-section').style.display = 'block';
+            // Проверяем существующую сессию
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-            // Показываем данные пользователя из Telegram
-            const user = tg.initDataUnsafe?.user;
-            if (user) {
-                document.getElementById('user-data').innerHTML = `
-                        <p>Привет, ${user.first_name}!</p>
-                        <p>@${user.username}</p>
-                    `;
+            if (session && session.user) {
+                showContent(session.user);
+            } else {
+                showAuthSection();
             }
+        } catch (error) {
+            showError('Ошибка инициализации: ' + error.message);
+        }
+    }
+
+    // Показ секции аутентификации
+    function showAuthSection() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('auth-section').style.display = 'block';
+
+        // Показываем данные пользователя из Telegram
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('user-info').innerHTML = `
+                    <p>👋 Привет, <strong>${user.first_name}</strong>!</p>
+                    ${user.username ? `<p>📱 @${user.username}</p>` : ''}
+                `;
         }
     }
 
@@ -35,14 +47,18 @@
     async function authenticate() {
         try {
             const initData = tg.initData;
+            if (!initData) {
+                throw new Error('Telegram init data not available');
+            }
 
+            // Вызываем Edge Function для аутентификации
             const { data, error } = await supabase.functions.invoke('tma-auth', {
                 body: { initData }
             });
 
             if (error) throw error;
 
-            // Устанавливаем сессию
+            // Устанавливаем сессию в Supabase Client
             const { error: authError } = await supabase.auth.setSession({
                 access_token: data.access_token,
                 refresh_token: data.refresh_token
@@ -53,29 +69,53 @@
             showContent(data.user);
 
         } catch (error) {
+            console.log(appError);
             console.error('Auth error:', error);
-            appError = `Auth error: ${error}`
-            tg.showPopup({ title: 'Ошибка', message: 'Не удалось войти' });
+            showError('Ошибка авторизации: ' + error.message);
         }
     }
 
+    // Показ авторизованного контента
     function showContent(user) {
+        document.getElementById('loading').style.display = 'none';
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('content').style.display = 'block';
 
-        // Здесь можно загружать защищенный контент
-        loadProtectedContent();
+        // Загружаем защищенные данные
+        loadProtectedData();
     }
 
-    async function loadProtectedContent() {
-        // Пример запроса к защищенному API
-        const { data, error } = await supabase
-            .from('protected_data')
-            .select('*');
+    // Загрузка защищенных данных
+    async function loadProtectedData() {
+        try {
+            const { data, error } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('telegram_id', tg.initDataUnsafe.user.id);
 
-        if (!error) {
-            console.log('Protected data:', data);
+            if (error) throw error;
+
+            console.log('Protected data loaded:', data);
+        } catch (error) {
+            console.error('Error loading protected data:', error);
         }
+    }
+
+    // Выход из системы
+    async function logout() {
+        try {
+            await supabase.auth.signOut();
+            window.location.reload();
+        } catch (error) {
+            showError('Ошибка выхода: ' + error.message);
+        }
+    }
+
+    // Показать ошибку
+    function showError(message) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = message;
     }
 
     // Инициализация при загрузке
