@@ -3,10 +3,11 @@
     import { supabase } from './supabase.js'
     // Инициализация Telegram Web App
     const tg = window.Telegram.WebApp;
+    let appError = $state('');
+
     tg.expand(); // Раскрываем на весь экран
     tg.enableClosingConfirmation(); // Подтверждение закрытия
 
-    // Инициализация Supabase
 
 
     // Проверка аутентификации
@@ -53,6 +54,7 @@
 
         } catch (error) {
             console.error('Auth error:', error);
+            appError = `Auth error: ${error}`
             tg.showPopup({ title: 'Ошибка', message: 'Не удалось войти' });
         }
     }
@@ -92,10 +94,11 @@
         <p>Вы успешно аутентифицированы</p>
     </div>
 </div>
-
+{#if appError}
+    <p class="error">{appError}</p>
+{/if}
 <style>
-    main {
-        min-height: 100vh;
-        background-color: #f8f9fa;
+    .error {
+        color: red;
     }
 </style>
