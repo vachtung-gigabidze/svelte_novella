@@ -1,148 +1,466 @@
-<script>
-    import {authStore} from './auth.js'
-    import { supabase } from './supabase.js'
-    let appError = $state('');
-    // Инициализация Telegram Web App
-    const tg = window.Telegram.WebApp;
-    // const SUPABASE_URL = 'https://your-project.supabase.co';
-    // const SUPABASE_ANON_KEY = 'your-anon-key';
+<!-- App.svelte -->
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { supabase } from "./supabase";
 
-    // const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Состояния приложения
+  let isLoading = true;
+  let error = "";
+  let user = null;
+  let session = null;
 
-    // Основная функция инициализации
-    async function initApp() {
-        try {
-            tg.expand();
-            tg.enableClosingConfirmation();
+  // Данные из Telegram
+  let tg = null;
+  let telegramUser = null;
 
-            // Проверяем существующую сессию
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  // Данные диалогов
+  let dialogues = [];
+  let currentDialogueIndex = 0;
+  let storyData = null;
 
-            if (session && session.user) {
-                showContent(session.user);
-            } else {
-                showAuthSection();
-            }
-        } catch (error) {
-            showError('Ошибка инициализации: ' + error.message);
+  // Инициализация приложения
+  onMount(async () => {
+    try {
+      // Инициализируем Telegram Web App
+      if (window.Telegram?.WebApp) {
+        tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+        tg.ready();
+
+        // Получаем данные пользователя
+        telegramUser = tg.initDataUnsafe?.user;
+
+        // Проверяем существующую сессию
+        const { data: sessionData } = await supabase.auth.getSession();
+        session = sessionData?.session;
+
+        if (session) {
+          // Получаем данные пользователя из Supabase
+          const { data: userData } = await supabase.auth.getUser();
+          user = userData?.user;
+
+          // Загружаем диалоги после входа
+          await loadDialogues();
         }
+      }
+    } catch (err) {
+      error = "Ошибка инициализации: " + err.message;
+    } finally {
+      isLoading = false;
     }
+  });
 
-    // Показ секции аутентификации
-    function showAuthSection() {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('auth-section').style.display = 'block';
+  // Загрузка диалогов из Supabase Storage
+  async function loadDialogues() {
+    try {
+      const { data, error } = await supabase.storage
+        .from("dracula")
+        .download("dracula_story.json");
 
-        // Показываем данные пользователя из Telegram
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            document.getElementById('user-info').innerHTML = `
-                    <p>👋 Привет, <strong>${user.first_name}</strong>!</p>
-                    ${user.username ? `<p>📱 @${user.username}</p>` : ''}
-                `;
-        }
+      if (error) throw error;
+
+      // Читаем содержимое файла
+      const text = await data.text();
+      storyData = JSON.parse(text);
+      dialogues = storyData.dialogues;
+    } catch (err) {
+      error = "Ошибка загрузки диалогов: " + err.message;
     }
+  }
 
-    // Аутентификация через Telegram
-    async function authenticate() {
-        appError = '';
-        try {
-            const initData = tg.initData;
-            if (!initData) {
-                throw new Error('Telegram init data not available');
-            }
+  // Аутентификация через Telegram
+  async function authenticate() {
+    try {
+      isLoading = true;
+      error = "";
 
-            // Вызываем Edge Function для аутентификации
-            const { data, error } = await supabase.functions.invoke('tma-auth', {
-                body: { initData }
-            });
+      if (!telegramUser?.id) {
+        throw new Error("Данные Telegram не доступны");
+      }
 
-            if (error) throw error;
+      // Создаем учетные данные из данных Telegram
+      const email = `tg_${telegramUser.id}@tma.example.com`;
+      const password = telegramUser.id.toString();
 
-            // Устанавливаем сессию в Supabase Client
-            const { error: authError } = await supabase.auth.setSession({
-                access_token: data.access_token,
-                refresh_token: data.refresh_token
-            });
+      // Выполняем вход
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-            if (authError) throw authError;
+      if (authError) throw authError;
 
-            showContent(data.user);
+      user = authData.user;
+      session = authData.session;
 
-        } catch (error) {
-            appError = JSON.stringify(data);
-            console.error('Auth error:', error);
-            showError('Ошибка авторизации: ' + error.message);
-        }
+      // Загружаем диалоги после успешной аутентификации
+      await loadDialogues();
+    } catch (err) {
+      error = "Ошибка авторизации: " + err.message;
+    } finally {
+      isLoading = false;
     }
+  }
 
-    // Показ авторизованного контента
-    function showContent(user) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-
-        // Загружаем защищенные данные
-        loadProtectedData();
+  // Навигация по диалогам
+  function nextDialogue() {
+    if (currentDialogueIndex < dialogues.length - 1) {
+      currentDialogueIndex++;
     }
+  }
 
-    // Загрузка защищенных данных
-    async function loadProtectedData() {
-        try {
-            const { data, error } = await supabase.storage
-                .from('dracula')
-                .download('dracula_story.json');
-
-            if (error) throw error;
-            const text = await data.text()
-            const jsonData = JSON.parse(text)
-            appError = JSON.stringify(jsonData);
-            console.log('Protected data loaded:', data);
-        } catch (error) {
-            appError = JSON.stringify(error);
-            console.error('Error loading protected data:', error);
-        }
+  function prevDialogue() {
+    if (currentDialogueIndex > 0) {
+      currentDialogueIndex--;
     }
+  }
 
-    // Выход из системы
-    async function logout() {
-        try {
-            await supabase.auth.signOut();
-            window.location.reload();
-        } catch (error) {
-            showError('Ошибка выхода: ' + error.message);
-        }
+  function goToDialogue(index) {
+    currentDialogueIndex = index;
+  }
+
+  // Выход из системы
+  async function logout() {
+    try {
+      await supabase.auth.signOut();
+      user = null;
+      session = null;
+      dialogues = [];
+      currentDialogueIndex = 0;
+    } catch (err) {
+      error = "Ошибка выхода: " + err.message;
     }
-
-    // Показать ошибку
-    function showError(message) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('error').style.display = 'block';
-        document.getElementById('error').textContent = message;
-    }
-
-    // Инициализация при загрузке
-    tg.ready();
-    initApp();
+  }
 </script>
 
-<div class="container">
-    <div id="loading" class="loading">Загрузка...</div>
+<svelte:head>
+  <title>Dracula Story</title>
+  <style>
+    :global(body) {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--tg-theme-bg-color, #000000);
+      color: var(--tg-theme-text-color, #ffffff);
+    }
 
-    <div id="auth-section" style="display:none;">
-        <h2>Добро пожаловать!</h2>
-        <div id="user-info"></div>
-        <button class="button" onclick={authenticate}>Войти через Telegram</button>
+    .app {
+      min-height: 100vh;
+      padding: 0;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--tg-theme-button-color, #8b0000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin: 0 0 2px 0;
+      color: #ffffff;
+    }
+
+    .user-meta {
+      font-size: 12px;
+      opacity: 0.7;
+      margin: 0;
+      color: #cccccc;
+    }
+
+    .dialogues-container {
+      padding: 20px;
+      min-height: calc(100vh - 120px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialogue-card {
+      background: rgba(139, 0, 0, 0.1);
+      border: 1px solid rgba(139, 0, 0, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .dialogue-text {
+      font-size: 18px;
+      line-height: 1.6;
+      text-align: center;
+      margin: 0 0 24px 0;
+      color: #ffffff;
+      font-style: italic;
+    }
+
+    .dialogue-meta {
+      font-size: 12px;
+      opacity: 0.6;
+      text-align: center;
+      margin: 8px 0;
+      color: #cccccc;
+    }
+
+    .navigation {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .nav-button {
+      background: rgba(139, 0, 0, 0.3);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .nav-button:hover {
+      background: rgba(139, 0, 0, 0.5);
+    }
+
+    .nav-button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .dots-navigation {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .dot.active {
+      background: var(--tg-theme-button-color, #8b0000);
+    }
+
+    .dot:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .error {
+      background: rgba(255, 59, 48, 0.2);
+      color: #ff3b30;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 16px;
+      font-size: 14px;
+      border: 1px solid rgba(255, 59, 48, 0.3);
+    }
+
+    .auth-section {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(0, 0, 0, 0.9);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .welcome-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #ffffff;
+    }
+
+    .welcome-text {
+      font-size: 16px;
+      opacity: 0.8;
+      margin: 0 0 32px 0;
+      color: #cccccc;
+    }
+
+    .button {
+      background: var(--tg-theme-button-color, #8b0000);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border: none;
+      padding: 16px 32px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .button:hover {
+      opacity: 0.9;
+    }
+
+    .button-logout {
+      background: rgba(255, 59, 48, 0.3);
+      color: #ff3b30;
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+  </style>
+</svelte:head>
+
+<div class="app">
+  {#if isLoading}
+    <div class="loading">
+      <p>Загрузка...</p>
+    </div>
+  {:else if error}
+    <div class="error">
+      {error}
+    </div>
+  {:else if user && session}
+    <!-- Шапка с информацией пользователя -->
+    <div class="header">
+      <div class="user-avatar">
+        {#if telegramUser?.first_name}
+          {telegramUser.first_name[0]}
+        {:else}
+          U
+        {/if}
+      </div>
+      <div class="user-info">
+        <h3 class="user-name">
+          {telegramUser?.first_name}
+          {telegramUser?.last_name || ""}
+        </h3>
+        <p class="user-meta">
+          {#if telegramUser?.username}
+            @{telegramUser.username}
+          {:else}
+            ID: {telegramUser?.id}
+          {/if}
+        </p>
+      </div>
+      <button class="button button-logout" on:click={logout}> Выйти </button>
     </div>
 
-    <div id="content" style="display:none;">
-        <h2>🎉 Вы авторизованы!</h2>
-        <p>Теперь вам доступны все функции приложения</p>
-        <button class="button" onclick={logout}>Выйти</button>
-    </div>
+    <!-- Карусель диалогов -->
+    <div class="dialogues-container">
+      {#if dialogues.length > 0}
+        <div class="dialogue-card">
+          <p class="dialogue-text">
+            "{dialogues[currentDialogueIndex].text}"
+          </p>
 
-    <div id="error" class="error" style="display:none;"></div>
+          {#if dialogues[currentDialogueIndex].backgroundImage}
+            <p class="dialogue-meta">
+              Background: {dialogues[currentDialogueIndex].backgroundImage}
+            </p>
+          {/if}
+
+          {#if dialogues[currentDialogueIndex].stateMachineBackgroundRive}
+            <p class="dialogue-meta">
+              Rive State: {dialogues[currentDialogueIndex]
+                .stateMachineBackgroundRive}
+            </p>
+          {/if}
+        </div>
+
+        <!-- Навигация точками -->
+        <div class="dots-navigation">
+          {#each dialogues as _, index}
+            <div
+              class="dot {index === currentDialogueIndex ? 'active' : ''}"
+              on:click={() => goToDialogue(index)}
+            />
+          {/each}
+        </div>
+
+        <!-- Кнопки навигации -->
+        <div class="navigation">
+          <button
+            class="nav-button"
+            on:click={prevDialogue}
+            disabled={currentDialogueIndex === 0}
+          >
+            ← Назад
+          </button>
+
+          <button
+            class="nav-button"
+            on:click={nextDialogue}
+            disabled={currentDialogueIndex === dialogues.length - 1}
+          >
+            Вперед →
+          </button>
+        </div>
+      {:else}
+        <div class="loading">
+          <p>Загрузка диалогов...</p>
+        </div>
+      {/if}
+    </div>
+  {:else}
+    <!-- Экран аутентификации -->
+    <div class="auth-section">
+      <h1 class="welcome-title">
+        {#if telegramUser}
+          Привет, {telegramUser.first_name}!
+        {:else}
+          Дракула: История
+        {/if}
+      </h1>
+
+      <p class="welcome-text">
+        Погрузитесь в атмосферную историю с интерактивными диалогами
+      </p>
+
+      <button class="button" on:click={authenticate}>
+        {#if telegramUser}
+          Начать историю как {telegramUser.first_name}
+        {:else}
+          Начать историю
+        {/if}
+      </button>
+    </div>
+  {/if}
 </div>
-{#if appError}
-    <p class="error">{appError}</p>
-{/if}
