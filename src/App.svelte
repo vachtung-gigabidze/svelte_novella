@@ -1,11 +1,5 @@
 <script lang="ts">
-  import App from "./novella/App.svelte";
-  // import { onMount } from "svelte";
-
-  // let userId: string | null = null;
-
-  // const urlParams = new URLSearchParams(window.location.search);
-  // userId = urlParams.get("id");
+  import Main from "./lib/novella/Main.svelte";
 </script>
 
-<App></App>
+<Main></Main>

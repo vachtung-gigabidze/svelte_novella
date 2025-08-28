@@ -9,7 +9,7 @@ const initializeTelegramSDK = async () => {
     
     if (miniApp?.ready) {
       await miniApp.ready();
-      console.log('Mini App готово');
+      console.log('Mini Main готово');
     }
   } catch (error) {
     console.error('Ошибка инициализации:', error);
