@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Main from "./lib/novella/Main.svelte";
+  import Main from "./lib/novella_telegram/Main.svelte";
+  import App from "./lib/novella/App.svelte";
 </script>
-
-<Main></Main>
+<App></App>
+<!--<Main></Main>-->

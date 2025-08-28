@@ -1,29 +1,28 @@
-<!-- DialogueCard.svelte -->
 <script>
-    import { onMount } from 'svelte';
-    import { supabase } from './supabaseClient.js';
+    import { onMount } from 'svelte'
+    import { supabase } from '../supabaseClient.js'
 
-    let { dialogue } = $props(); // Вместо export let dialogue
+    let { dialogue } = $props()
 
-    let backgroundImageUrl = $state(null);
-    let characterImageUrl = $state(null);
-    let isLoading = $state(true);
-    let error = $state(null);
+    let backgroundImageUrl = $state(null)
+    let characterImageUrl = $state(null)
+    let isLoadingMedia = $state(true)
+    let errorMedia = $state(null)
 
     // Загрузка медиа-файлов
     async function loadMediaFiles() {
         try {
-            isLoading = true;
-            error = null;
+            isLoadingMedia = true
+            errorMedia = null
 
             // Загружаем background image
             if (dialogue.backgroundImage && dialogue.backgroundImage !== 'back.riv') {
                 const { data: bgData, error: bgError } = await supabase.storage
                     .from('dracula')
-                    .download(dialogue.backgroundImage);
+                    .download(dialogue.backgroundImage)
 
                 if (!bgError && bgData) {
-                    backgroundImageUrl = URL.createObjectURL(bgData);
+                    backgroundImageUrl = URL.createObjectURL(bgData)
                 }
             }
 
@@ -31,45 +30,45 @@
             if (dialogue.characterImage) {
                 const { data: charData, error: charError } = await supabase.storage
                     .from('dracula')
-                    .download(dialogue.characterImage);
+                    .download(dialogue.characterImage)
 
                 if (!charError && charData) {
-                    characterImageUrl = URL.createObjectURL(charData);
+                    characterImageUrl = URL.createObjectURL(charData)
                 }
             }
 
         } catch (err) {
-            error = 'Ошибка загрузки медиа: ' + err.message;
-            console.error('Media loading error:', err);
+            errorMedia = 'Ошибка загрузки медиа: ' + err.message
+            console.error('Media loading error:', err)
         } finally {
-            isLoading = false;
+            isLoadingMedia = false
         }
     }
 
     // Очистка URL объектов
     function cleanupUrls() {
-        if (backgroundImageUrl) URL.revokeObjectURL(backgroundImageUrl);
-        if (characterImageUrl) URL.revokeObjectURL(characterImageUrl);
-        backgroundImageUrl = null;
-        characterImageUrl = null;
+        if (backgroundImageUrl) URL.revokeObjectURL(backgroundImageUrl)
+        if (characterImageUrl) URL.revokeObjectURL(characterImageUrl)
+        backgroundImageUrl = null
+        characterImageUrl = null
     }
 
-    // Эффект для загрузки медиа при изменении диалога
+    // Эффект для загрузки медиа
     $effect(() => {
-        cleanupUrls();
-        loadMediaFiles();
+        cleanupUrls()
+        loadMediaFiles()
 
         return () => {
-            cleanupUrls();
-        };
-    });
+            cleanupUrls()
+        }
+    })
 
     // Обработчик выбора варианта ответа
     function handleOptionSelect(nextDialogueId) {
         const event = new CustomEvent('dialogueChange', {
             detail: { nextDialogueId }
-        });
-        window.dispatchEvent(event);
+        })
+        window.dispatchEvent(event)
     }
 </script>
 
@@ -77,44 +76,33 @@
     <!-- Фон -->
     {#if backgroundImageUrl}
         <div class="background-media">
-            {#if dialogue.backgroundImage.endsWith('.riv')}
-                <div class="rive-container">
-                    <p class="media-placeholder">Rive Animation: {dialogue.backgroundImage}</p>
-                </div>
-            {:else}
-                <img
-                        src={backgroundImageUrl}
-                        alt="Background"
-                        class="background-image"
-                        onload={() => isLoading = false}
-                        onerror={(e) => {
-            error = 'Ошибка загрузки фона';
-            console.error('Background load error:', e);
-          }}
-                />
-            {/if}
+            <img
+                    src={backgroundImageUrl}
+                    alt="Background"
+                    class="background-image"
+                    onload={() => isLoadingMedia = false}
+                    onerror={() => errorMedia = 'Ошибка загрузки фона'}
+            />
         </div>
     {/if}
 
     <!-- Персонаж -->
     {#if characterImageUrl}
         <div class="character-media">
-            {#if dialogue.characterImage.endsWith('.riv')}
-                <div class="rive-container">
-                    <p class="media-placeholder">Character Rive: {dialogue.characterImage}</p>
-                </div>
-            {:else}
-                <img
-                        src={characterImageUrl}
-                        alt="Character"
-                        class="character-image"
-                        onload={() => isLoading = false}
-                        onerror={(e) => {
-            error = 'Ошибка загрузки персонажа';
-            console.error('Character load error:', e);
-          }}
-                />
-            {/if}
+            <img
+                    src={characterImageUrl}
+                    alt="Character"
+                    class="character-image"
+                    onload={() => isLoadingMedia = false}
+                    onerror={() => errorMedia = 'Ошибка загрузки персонажа'}
+            />
+        </div>
+    {/if}
+
+    <!-- Rive placeholder -->
+    {#if dialogue.backgroundImage?.endsWith('.riv')}
+        <div class="rive-placeholder">
+            <p>Rive Animation: {dialogue.backgroundImage}</p>
         </div>
     {/if}
 
@@ -140,41 +128,30 @@
     </div>
 
     <!-- Индикатор загрузки -->
-    {#if isLoading}
+    {#if isLoadingMedia}
         <div class="loading-overlay">
             <div class="loading-spinner"></div>
         </div>
     {/if}
 
     <!-- Сообщение об ошибке -->
-    {#if error}
+    {#if errorMedia}
         <div class="error-overlay">
-            <p class="error-text">{error}</p>
+            <p class="error-text">{errorMedia}</p>
         </div>
     {/if}
-
-    <!-- Отладочная информация -->
-    <div class="debug-info">
-        <p class="dialogue-id">ID: {dialogue.id} → Next: {dialogue.nextDialogueId}</p>
-        {#if dialogue.stateMachineBackgroundRive}
-            <p class="dialogue-meta">🎬 BG Animation: {dialogue.stateMachineBackgroundRive}</p>
-        {/if}
-        {#if dialogue.smTriggerBackgroundRive}
-            <p class="dialogue-meta">⚡ Trigger: {dialogue.smTriggerBackgroundRive}</p>
-        {/if}
-    </div>
 </div>
 
 <style>
-    /* Стили остаются без изменений */
     .dialogue-container {
         position: relative;
         width: 100%;
-        height: 400px;
+        height: 500px;
         border-radius: 16px;
         overflow: hidden;
         background: rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(139, 0, 0, 0.3);
+        margin-bottom: 20px;
     }
 
     .background-media {
@@ -208,19 +185,18 @@
         object-fit: contain;
     }
 
-    .rive-container {
+    .rive-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(0, 0, 0, 0.2);
-    }
-
-    .media-placeholder {
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 14px;
-        text-align: center;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        z-index: 1;
     }
 
     .dialogue-content {
@@ -270,10 +246,6 @@
         box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
     }
 
-    .option-button:active {
-        transform: translateY(0);
-    }
-
     .loading-overlay {
         position: absolute;
         top: 0;
@@ -312,31 +284,6 @@
     .error-text {
         margin: 0;
         font-size: 12px;
-    }
-
-    .debug-info {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 8px 12px;
-        border-radius: 8px;
-        z-index: 4;
-    }
-
-    .dialogue-id {
-        font-size: 11px;
-        opacity: 0.6;
-        margin: 0;
-        color: #cccccc;
-        font-family: monospace;
-    }
-
-    .dialogue-meta {
-        font-size: 10px;
-        opacity: 0.5;
-        margin: 2px 0 0 0;
-        color: #999999;
     }
 
     @keyframes spin {
