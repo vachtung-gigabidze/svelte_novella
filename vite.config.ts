@@ -10,5 +10,21 @@ export default defineConfig({
     alias: {
       $lib: '/src/lib'
     }
+  }  ,
+  server: {
+    port: 5173,
+    host: true
+  },
+  build: {
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
+    }
+  },
+  optimizeDeps: {
+    exclude: ['rive-js'] // Исключаем из предварительного бандлинга
   }
+
 })

@@ -17,9 +17,9 @@
     "typescript": "~5.8.3",
     "vite": "^7.0.4"
   },
-  "dependencies": {
-
-    "@supabase/supabase-js": "^2.51.0"
-
+  "dependencies": {   
+    "@supabase/supabase-js": "^2.51.0",
+    "prettier-plugin-svelte": "^3.4.0",
+    "@rive-app/canvas": "^2.30.4"
   }
 }

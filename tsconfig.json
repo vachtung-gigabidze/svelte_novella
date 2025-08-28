@@ -4,5 +4,6 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
 //  "extends": "./.svelte-kit/tsconfig.json",
 }
