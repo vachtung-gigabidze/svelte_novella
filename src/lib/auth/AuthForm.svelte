@@ -1,6 +1,6 @@
 <script>
-    import { supabase } from '../supabaseClient'
-
+    import { supabase, checkSupabaseConnection, signIn } from '../supabaseClient'
+    import { onMount} from 'svelte';
     let email = $state('')
     let password = $state('')
     let confirmPassword = $state('')
@@ -8,12 +8,30 @@
     let error = $state('')
     let isLogin = $state(true)
     let successMessage = $state('')
+    let connectionError = $state(false)
+
+    // Проверяем подключение при монтировании
+    onMount(async () => {
+        const isConnected = await checkSupabaseConnection()
+        if (!isConnected) {
+            connectionError = true
+            error = 'Нет подключения к серверу. Проверьте интернет соединение.'
+        }
+    })
 
     async function handleAuth() {
         try {
             isLoading = true
             error = ''
             successMessage = ''
+            connectionError = false
+
+            // Проверяем подключение перед аутентификацией
+            const isConnected = await checkSupabaseConnection()
+            if (!isConnected) {
+                connectionError = true
+                throw new Error('Нет подключения к серверу')
+            }
 
             // Валидация
             if (!email || !password) {
@@ -33,10 +51,12 @@
 
             if (isLogin) {
                 // Вход
-                result = await supabase.auth.signInWithPassword({
-                    email: email.toLowerCase().trim(),
-                    password
-                })
+                result = await signIn(email.toLowerCase().trim(),
+                    password);
+                // result = await supabase.auth.signInWithPassword({
+                //     email: email.toLowerCase().trim(),
+                //     password
+                // })
             } else {
                 // Регистрация
                 result = await supabase.auth.signUp({
@@ -53,7 +73,16 @@
             }
 
             if (result.error) {
-                throw new Error(result.error.message)
+                // Более детальная обработка ошибок
+                if (result.error.message.includes('fetch')) {
+                    throw new Error('Ошибка сети. Проверьте интернет соединение.')
+                } else if (result.error.message.includes('Invalid login credentials')) {
+                    throw new Error('Неверный email или пароль')
+                } else if (result.error.message.includes('User already registered')) {
+                    throw new Error('Пользователь с таким email уже зарегистрирован')
+                } else {
+                    throw new Error(result.error.message)
+                }
             }
 
             if (isLogin) {
@@ -66,7 +95,7 @@
                 }))
             } else {
                 // Успешная регистрация
-                successMessage = 'Проверьте вашу почту для подтверждения регистрации!'
+                successMessage = 'Письмо с подтверждением отправлено на вашу почту! Проверьте папку "Входящие" или "Спам".'
                 // Очищаем форму после успешной регистрации
                 email = ''
                 password = ''
@@ -74,7 +103,7 @@
             }
 
         } catch (err) {
-            error = `Auth error: ${err.message}`;
+            error = err.message
             console.error('Auth error:', err)
         } finally {
             isLoading = false
@@ -94,6 +123,26 @@
             handleAuth()
         }
     }
+
+    // Функция для тестирования подключения
+    async function testConnection() {
+        try {
+            isLoading = true
+            error = ''
+            const isConnected = await checkSupabaseConnection()
+            if (isConnected) {
+                connectionError = false
+                successMessage = 'Подключение восстановлено!'
+            } else {
+                connectionError = true
+                error = 'Подключение не установлено'
+            }
+        } catch (err) {
+            error = 'Ошибка тестирования подключения: ' + err.message
+        } finally {
+            isLoading = false
+        }
+    }
 </script>
 
 <div class="auth-form">
@@ -104,6 +153,19 @@
             Регистрация
         {/if}
     </h2>
+
+    {#if connectionError}
+        <div class="connection-error">
+            🔴 Отсутствует подключение к серверу
+            <button onclick={testConnection} class="retry-button" disabled={isLoading}>
+                {#if isLoading}
+                    Проверка...
+                {:else}
+                    Проверить снова
+                {/if}
+            </button>
+        </div>
+    {/if}
 
     {#if error}
         <div class="auth-error">
@@ -117,7 +179,7 @@
         </div>
     {/if}
 
-    <form on:submit|preventDefault={handleAuth}>
+    <form onsubmit={handleAuth}>
         <div class="form-group">
             <label for="email" class="form-label">Email</label>
             <input
@@ -127,8 +189,8 @@
                     required
                     class="form-input"
                     placeholder="Введите ваш email"
-                    on:keypress={handleKeyPress}
-                    disabled={isLoading}
+                    onkeypress={handleKeyPress}
+
             />
         </div>
 
@@ -142,8 +204,8 @@
                     class="form-input"
                     placeholder="Введите пароль"
                     minlength="6"
-                    on:keypress={handleKeyPress}
-                    disabled={isLoading}
+                    onkeypress={handleKeyPress}
+
             />
         </div>
 
@@ -158,8 +220,8 @@
                         class="form-input"
                         placeholder="Повторите пароль"
                         minlength="6"
-                        on:keypress={handleKeyPress}
-                        disabled={isLoading}
+                        onkeypress={handleKeyPress}
+
                 />
             </div>
         {/if}
@@ -167,7 +229,7 @@
         <button
                 type="submit"
                 class="auth-button"
-                disabled={isLoading}
+               
         >
             {#if isLoading}
                 <div class="button-spinner"></div>
@@ -193,7 +255,7 @@
             {:else}
                 Уже есть аккаунт?
             {/if}
-            <button on:click={switchMode} class="switch-button" disabled={isLoading}>
+            <button onclick={switchMode} class="switch-button" disabled={isLoading}>
                 {#if isLogin}
                     Зарегистрироваться
                 {:else}
@@ -201,6 +263,12 @@
                 {/if}
             </button>
         </p>
+    </div>
+
+    <!-- Отладочная информация -->
+    <div class="debug-info">
+        <p>URL: {import.meta.env.VITE_SUPABASE_URL ? 'Установлен' : 'Отсутствует'}</p>
+        <p>Key: {import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Установлен' : 'Отсутствует'}</p>
     </div>
 </div>
 
@@ -213,6 +281,33 @@
         border-radius: 16px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+    }
+
+    .connection-error {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 152, 0, 0.3);
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .retry-button {
+        background: rgba(255, 152, 0, 0.3);
+        color: #ff9800;
+        border: 1px solid rgba(255, 152, 0, 0.5);
+        padding: 8px 16px;
+        border-radius: 6px;
+        margin-top: 8px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .retry-button:hover:not(:disabled) {
+        background: rgba(255, 152, 0, 0.4);
     }
 
     .auth-title {
@@ -344,6 +439,15 @@
     .switch-button:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+
+    .debug-info {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 12px;
+        color: #666;
+        text-align: center;
     }
 
     @keyframes spin {
