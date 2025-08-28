@@ -18,8 +18,8 @@ import App from './App.svelte'
 
 // Initialize Telegram SDK
 // initializeTelegramSDK();
-// const app = mount(App, {
-//   target: document.getElementById('app')!,
-// })
+const app = mount(App, {
+  target: document.getElementById('app')!,
+})
 
-// export default app
+export default app
