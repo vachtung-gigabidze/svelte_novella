@@ -1,7 +1,9 @@
 <!-- App.svelte -->
 <script>
   import { onMount } from 'svelte';
-  import { supabase } from './supabase';
+  import { supabase } from './supabaseClient.js';
+  import DialogueCard from './DialogueCard.svelte';
+
 
   // Состояния приложения
   let isLoading = true;
@@ -49,7 +51,30 @@
     } finally {
       isLoading = false;
     }
+
+    // Добавляем обработчик события
+    window.addEventListener('dialogueChange', handleDialogueChange);
+
+    return () => {
+      window.removeEventListener('dialogueChange', handleDialogueChange);
+    };
   });
+
+  // Обработчик изменения диалога
+  function handleDialogueChange(event) {
+    const nextDialogueId = event.detail.nextDialogueId;
+    const nextIndex = dialogues.findIndex(d => d.id === nextDialogueId);
+
+    if (nextIndex !== -1) {
+      currentDialogueIndex = nextIndex;
+    } else if (dialogue.nextDialogueId) {
+      // Если nextDialogueId указан в текущем диалоге
+      const fallbackIndex = dialogues.findIndex(d => d.id === dialogue.nextDialogueId);
+      if (fallbackIndex !== -1) {
+        currentDialogueIndex = fallbackIndex;
+      }
+    }
+  }
 
   // Аутентификация через Telegram (вызов Edge Function)
   async function authenticate() {
@@ -135,7 +160,7 @@
   // Выход из системы
   async function logout() {
     try {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       user = null;
       session = null;
       dialogues = [];
@@ -145,7 +170,6 @@
     }
   }
 </script>
-
 
 <div class="app">
   {#if isLoading}
@@ -188,23 +212,10 @@
     <!-- Карусель диалогов -->
     <div class="dialogues-container">
       {#if dialogues.length > 0}
-        <div class="dialogue-card">
-          <p class="dialogue-text">
-            "{dialogues[currentDialogueIndex].text}"
-          </p>
-
-          {#if dialogues[currentDialogueIndex].backgroundImage}
-            <p class="dialogue-meta">
-              Background: {dialogues[currentDialogueIndex].backgroundImage}
-            </p>
-          {/if}
-
-          {#if dialogues[currentDialogueIndex].stateMachineBackgroundRive}
-            <p class="dialogue-meta">
-              Rive State: {dialogues[currentDialogueIndex].stateMachineBackgroundRive}
-            </p>
-          {/if}
-        </div>
+        <DialogueCard
+                dialogue={dialogues[currentDialogueIndex]}
+                on:dialogueChange={handleDialogueChange}
+        />
 
         <!-- Навигация точками -->
         <div class="dots-navigation">
