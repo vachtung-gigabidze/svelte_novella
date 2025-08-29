@@ -25,7 +25,7 @@
     try {
       console.log("Загрузка диалогов из /assets/dracula_story.json");
 
-      const response = await fetch("/assets/dracula_story.json");
+      const response = await fetch("/svelte_novella/assets/dracula_story.json");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

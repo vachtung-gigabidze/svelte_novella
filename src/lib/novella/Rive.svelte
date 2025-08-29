@@ -11,7 +11,7 @@
 
     // Create the Rive instance
     const riveInstance = new rive.Rive({
-      src: `/assets/${fileName}`,
+      src: `/svelte_novella/assets/${fileName}`,
       canvas,
       autoplay: true,
       stateMachines: "SM1",

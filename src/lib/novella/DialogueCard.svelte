@@ -29,7 +29,7 @@
           if (dialogue.backgroundImage.endsWith(".riv")) {
            // await loadRiveAnimation(dialogue.backgroundImage, "background");
           } else {
-            backgroundImageUrl = `/assets/${dialogue.backgroundImage}`;
+            backgroundImageUrl = `/svelte_novella/assets/${dialogue.backgroundImage}`;
             await testImage(backgroundImageUrl);
           }
         } catch (err) {
@@ -44,7 +44,7 @@
           if (dialogue.characterImage.endsWith(".riv")) {
             //await loadRiveAnimation(dialogue.characterImage, "character");
           } else {
-            characterImageUrl = `/assets/${dialogue.characterImage}`;
+            characterImageUrl = `/svelte_novella/assets/${dialogue.characterImage}`;
             await testImage(characterImageUrl);
           }
         } catch (err) {
