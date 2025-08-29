@@ -8,7 +8,6 @@
   let characterImageUrl = $state(null);
 
   let errorMedia = $state(null);
-  console.log(dialogue);
   // Динамический импорт Rive
   onMount(async () => {
     // try {
