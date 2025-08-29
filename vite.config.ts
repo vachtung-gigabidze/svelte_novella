@@ -14,17 +14,11 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true
-  },
-  build: {
-    assetsDir: 'assets',
-    rollupOptions: {
-      output: {
-        assetFileNames: 'assets/[name]-[hash][extname]'
-      }
-    }
-  },
-  optimizeDeps: {
-    exclude: ['rive-js'] // Исключаем из предварительного бандлинга
   }
+  // ,
+
+  // optimizeDeps: {
+  //   exclude: ['@rive-app/canvas'] // Исключаем из предварительного бандлинга
+  // }
 
 })

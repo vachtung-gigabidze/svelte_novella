@@ -18,7 +18,7 @@
     // }
   });
 
-  // Загрузка медиа-файлов из /files/
+  // Загрузка медиа-файлов из /assets/
   async function loadMediaFiles() {
     try {
       errorMedia = null;
@@ -27,9 +27,9 @@
       if (dialogue.backgroundImage) {
         try {
           if (dialogue.backgroundImage.endsWith(".riv")) {
-            await loadRiveAnimation(dialogue.backgroundImage, "background");
+           // await loadRiveAnimation(dialogue.backgroundImage, "background");
           } else {
-            backgroundImageUrl = `/files/${dialogue.backgroundImage}`;
+            backgroundImageUrl = `/assets/${dialogue.backgroundImage}`;
             await testImage(backgroundImageUrl);
           }
         } catch (err) {
@@ -42,9 +42,9 @@
       if (dialogue.characterImage) {
         try {
           if (dialogue.characterImage.endsWith(".riv")) {
-            await loadRiveAnimation(dialogue.characterImage, "character");
+            //await loadRiveAnimation(dialogue.characterImage, "character");
           } else {
-            characterImageUrl = `/files/${dialogue.characterImage}`;
+            characterImageUrl = `/assets/${dialogue.characterImage}`;
             await testImage(characterImageUrl);
           }
         } catch (err) {
@@ -66,66 +66,66 @@
     }
   }
 
-  // Загрузка Rive анимации
-  async function loadRiveAnimation(filename, type) {
-    try {
-      const response = await fetch(`/files/${filename}`);
-      if (!response.ok) throw new Error("Rive file not found");
+  // // Загрузка Rive анимации
+  // async function loadRiveAnimation(filename, type) {
+  //   try {
+  //     const response = await fetch(`/assets/${filename}`);
+  //     if (!response.ok) throw new Error("Rive file not found");
 
-      const arrayBuffer = await response.arrayBuffer();
+  //     const arrayBuffer = await response.arrayBuffer();
 
-      // Создаем canvas для анимации
-      const canvasId = `${type}-rive-canvas`;
-      let canvas = document.getElementById(canvasId);
+  //     // Создаем canvas для анимации
+  //     const canvasId = `${type}-rive-canvas`;
+  //     let canvas = document.getElementById(canvasId);
 
-      if (!canvas) {
-        canvas = document.createElement("canvas");
-        canvas.id = canvasId;
-        canvas.className = `rive-canvas ${type}-rive`;
-        canvas.width = type === "background" ? 800 : 400;
-        canvas.height = type === "background" ? 600 : 400;
+  //     if (!canvas) {
+  //       canvas = document.createElement("canvas");
+  //       canvas.id = canvasId;
+  //       canvas.className = `rive-canvas ${type}-rive`;
+  //       canvas.width = type === "background" ? 800 : 400;
+  //       canvas.height = type === "background" ? 600 : 400;
 
-        const container = document.createElement("div");
-        container.className = `rive-container ${type}-rive-container`;
-        container.appendChild(canvas);
+  //       const container = document.createElement("div");
+  //       container.className = `rive-container ${type}-rive-container`;
+  //       container.appendChild(canvas);
 
-        if (type === "background") {
-          document.querySelector(".background-media")?.appendChild(container);
-        } else {
-          document.querySelector(".character-media")?.appendChild(container);
-        }
-      }
+  //       if (type === "background") {
+  //         document.querySelector(".background-media")?.appendChild(container);
+  //       } else {
+  //         document.querySelector(".character-media")?.appendChild(container);
+  //       }
+  //     }
 
-      // Применяем state machine если указана
-      if (dialogue.stateMachineBackgroundRive && type === "background") {
-        setTimeout(() => {
-          try {
-          } catch (err) {
-            console.warn(
-              "State machine not found:",
-              dialogue.stateMachineBackgroundRive
-            );
-          }
-        }, 100);
-      }
+  //     // Применяем state machine если указана
+  //     if (dialogue.stateMachineBackgroundRive && type === "background") {
+  //       setTimeout(() => {
+  //         try {
+  //         } catch (err) {
+  //           console.warn(
+  //             "State machine not found:",
+  //             dialogue.stateMachineBackgroundRive
+  //           );
+  //         }
+  //       }, 100);
+  //     }
 
-      // Запускаем триггер если указан
-      if (dialogue.smTriggerBackgroundRive && type === "background") {
-        setTimeout(() => {
-          try {
-          } catch (err) {
-            console.warn(
-              "Trigger not found:",
-              dialogue.smTriggerBackgroundRive
-            );
-          }
-        }, 200);
-      }
-    } catch (err) {
-      console.error("Rive loading error:", err);
-      throw err;
-    }
-  }
+  //     // Запускаем триггер если указан
+  //     if (dialogue.smTriggerBackgroundRive && type === "background") {
+  //       setTimeout(() => {
+  //         try {
+  //         } catch (err) {
+  //           console.warn(
+  //             "Trigger not found:",
+  //             dialogue.smTriggerBackgroundRive
+  //           );
+  //         }
+  //       }, 200);
+  //     }
+  //   } catch (err) {
+  //     console.error("Rive loading error:", err);
+  //     throw err;
+  //   }
+  // }
 
   // Функция для проверки доступности изображения
   function testImage(url) {
@@ -138,7 +138,7 @@
   }
 
   // Эффект для загрузки медиа при изменении диалога
-  loadMediaFiles();
+   loadMediaFiles();
 
   // Обработчик выбора варианта ответа
   function handleOptionSelect(nextDialogueId) {
@@ -154,7 +154,7 @@
   {#if dialogue.backgroundImage}
     <div class="background-media">
       {#if dialogue.backgroundImage.endsWith(".riv")}
-        <Rive file={dialogue.backgroundImage} />
+        <Rive fileName={dialogue.backgroundImage} />
       {:else}
         <img
           src={backgroundImageUrl ? backgroundImageUrl : ""}
@@ -174,7 +174,7 @@
   {#if dialogue.characterImage}
     <div class="character-media">
       {#if dialogue.characterImage.endsWith(".riv")}
-        <Rive file={dialogue.characterImage} />
+        <Rive fileName={dialogue.characterImage} />
       {:else}
         <img
           src={characterImageUrl ? characterImageUrl : ""}
@@ -244,11 +244,14 @@
 
   .background-media {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index:1;
+    max-height: 70%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
   }
 
   .background-image {

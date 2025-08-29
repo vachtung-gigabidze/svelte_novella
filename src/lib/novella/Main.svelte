@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import DialogueCard from "../novella/DialogueCard.svelte";
+  import DialogueCard from "./DialogueCard.svelte";
 
   let user = $state({ name: "Игрок" });
   let isLoading = $state(true);
@@ -20,12 +20,12 @@
     }
   });
 
-  // Загрузка диалогов из /files/dracula_story.json
+  // Загрузка диалогов из /assets/dracula_story.json
   async function loadDialogues() {
     try {
-      console.log("Загрузка диалогов из /files/dracula_story.json");
+      console.log("Загрузка диалогов из /assets/dracula_story.json");
 
-      const response = await fetch("/files/dracula_story.json");
+      const response = await fetch("/assets/dracula_story.json");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
