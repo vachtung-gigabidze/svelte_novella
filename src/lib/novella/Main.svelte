@@ -147,7 +147,7 @@
     </div> -->
 
     <!-- Карусель диалогов -->
-    <div class="dialogues-container">
+    <div class="dialogues-container" onclick={()=>nextDialogue()}>
       <DialogueCard index={currentDialogueIndex} dialogue={dialogues[currentDialogueIndex]} />
 
       <!-- Навигация -->
