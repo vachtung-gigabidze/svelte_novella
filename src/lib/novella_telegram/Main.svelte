@@ -1,8 +1,9 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, setContext } from 'svelte'
   import { supabase } from '../supabaseClient.js'
   import { initializeTelegram, getTelegramUser } from '../telegram'
   import DialogueCard from '../components/DialogueCard.svelte'
+  
 
 
   let tg = $state(null)
@@ -13,7 +14,7 @@
   let error = $state('')
   let dialogues = $state([])
   let currentDialogueIndex = $state(0)
-
+  setContext('defaultAssetsUrl', '/svelte_novella/assets/')
   // Инициализация приложения
   onMount(async () => {
     try {

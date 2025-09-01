@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import * as rive from "@rive-app/canvas";
-
+  import {defaultAssetsUrl} from './store.svelte'
   let { fileName } = $props();
   // let isJumpingInput = $state();
   let canvas = $state();
@@ -11,7 +11,7 @@
 
     // Create the Rive instance
     const riveInstance = new rive.Rive({
-      src: `/svelte_novella/assets/${fileName}`,
+      src: `${defaultAssetsUrl}${fileName}`,
       canvas,
       autoplay: true,
       stateMachines: "SM1",

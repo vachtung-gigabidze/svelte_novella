@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import Rive from "./Rive.svelte";
-
+  import {defaultAssetsUrl} from './store.svelte'
   let { dialogue } = $props();
 
   let backgroundImageUrl = $state(null);
@@ -29,7 +29,7 @@
           if (dialogue.backgroundImage.endsWith(".riv")) {
            // await loadRiveAnimation(dialogue.backgroundImage, "background");
           } else {
-            backgroundImageUrl = `/svelte_novella/assets/${dialogue.backgroundImage}`;
+            backgroundImageUrl = `${defaultAssetsUrl}${dialogue.backgroundImage}`;
             await testImage(backgroundImageUrl);
           }
         } catch (err) {
@@ -44,7 +44,7 @@
           if (dialogue.characterImage.endsWith(".riv")) {
             //await loadRiveAnimation(dialogue.characterImage, "character");
           } else {
-            characterImageUrl = `/svelte_novella/assets/${dialogue.characterImage}`;
+            characterImageUrl = `${defaultAssetsUrl}${dialogue.characterImage}`;
             await testImage(characterImageUrl);
           }
         } catch (err) {
@@ -160,7 +160,7 @@
           src={backgroundImageUrl ? backgroundImageUrl : ""}
           alt="Background"
           class="background-image"
-          class:hidden={!backgroundImageUrl}
+          class:hidden={!backgroundImageUrl && !dialogue.backgroundImage.endsWith(".riv")}
           onerror={() => {
             errorMedia = "Ошибка загрузки фона: " + dialogue.backgroundImage;
             backgroundImageUrl = null;

@@ -1,13 +1,14 @@
 <script>
   import { onMount } from "svelte";
   import DialogueCard from "./DialogueCard.svelte";
+  import {defaultAssetsUrl} from './store.svelte'
 
   let user = $state({ name: "Игрок" });
   let isLoading = $state(true);
   let error = $state("");
   let dialogues = $state([]);
   let currentDialogueIndex = $state(0);
-
+  //setContext('defaultAssetsUrl', '/assets/');///svelte_novella
   // Инициализация приложения
   onMount(async () => {
     try {
@@ -23,9 +24,9 @@
   // Загрузка диалогов из /assets/dracula_story.json
   async function loadDialogues() {
     try {
-      console.log("Загрузка диалогов из /assets/dracula_story.json");
+      console.log(`${defaultAssetsUrl}dracula_story.json`);
 
-      const response = await fetch("/svelte_novella/assets/dracula_story.json");
+      const response = await fetch(`${defaultAssetsUrl}dracula_story.json`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
