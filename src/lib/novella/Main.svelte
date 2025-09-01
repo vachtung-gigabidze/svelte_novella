@@ -129,7 +129,7 @@
     </div>
   {:else if dialogues.length > 0}
     <!-- Шапка -->
-    <div class="header">
+    <!-- <div class="header">
       <div class="user-avatar">
         {user.name[0].toUpperCase()}
       </div>
@@ -144,11 +144,11 @@
       <button class="nav-button" onclick={restartStory}>
         🔄 Начать сначала
       </button>
-    </div>
+    </div> -->
 
     <!-- Карусель диалогов -->
     <div class="dialogues-container">
-      <DialogueCard dialogue={dialogues[currentDialogueIndex]} />
+      <DialogueCard index={currentDialogueIndex} dialogue={dialogues[currentDialogueIndex]} />
 
       <!-- Навигация -->
       <div class="dots-navigation">

@@ -1,6 +1,6 @@
 <script>
   import { onMount, setContext } from 'svelte'
-  import { supabase } from '../supabaseClient.js'
+  import { supabase, getTmaAuthInvoke } from '../supabaseClient.js'
   import { initializeTelegram, getTelegramUser } from '../telegram'
   import DialogueCard from '../components/DialogueCard.svelte'
   
@@ -46,10 +46,7 @@
       const initData = tg.initData
       if (!initData) throw new Error("Telegram init data not available")
 
-      const { data, error: invokeError } = await supabase.functions.invoke(
-              "tma-auth",
-              { body: { initData } }
-      )
+      const { data, error: invokeError } = await getTmaAuthInvoke(initData);
 
       if (invokeError) throw invokeError
 

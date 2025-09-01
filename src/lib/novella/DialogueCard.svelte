@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import Rive from "./Rive.svelte";
   import {defaultAssetsUrl} from './store.svelte'
-  let { dialogue } = $props();
+  let { index, dialogue } = $props();
 
   let backgroundImageUrl = $state(null);
   let characterImageUrl = $state(null);
@@ -154,13 +154,15 @@
   {#if dialogue.backgroundImage}
     <div class="background-media">
       {#if dialogue.backgroundImage.endsWith(".riv")}
-        <Rive fileName={dialogue.backgroundImage} />
+      {#key dialogue.backgroundImage}
+      <Rive fileName={dialogue.backgroundImage} />
+      {/key}
       {:else}
         <img
           src={backgroundImageUrl ? backgroundImageUrl : ""}
           alt="Background"
           class="background-image"
-          class:hidden={!backgroundImageUrl && !dialogue.backgroundImage.endsWith(".riv")}
+          class:hidden={!backgroundImageUrl || !dialogue.backgroundImage.endsWith(".riv")}
           onerror={() => {
             errorMedia = "Ошибка загрузки фона: " + dialogue.backgroundImage;
             backgroundImageUrl = null;
@@ -174,13 +176,14 @@
   {#if dialogue.characterImage}
     <div class="character-media">
       {#if dialogue.characterImage.endsWith(".riv")}
-        <Rive fileName={dialogue.characterImage} />
+       {#key dialogue.characterImage}  
+      <Rive fileName={dialogue.characterImage} /> {/key}
       {:else}
         <img
           src={characterImageUrl ? characterImageUrl : ""}
           alt="Character"
           class="character-image"
-          class:hidden={!characterImageUrl}
+          class:hidden={!characterImageUrl || !dialogue.characterImageUrl.endsWith(".riv")}
           onerror={() => {
             errorMedia =
               "Ошибка загрузки персонажа: " + dialogue.characterImage;
@@ -259,6 +262,7 @@
     height: 100%;
     object-fit: cover;
     opacity: 0.7;
+    overflow: hidden;
   }
 
   .character-media {
@@ -280,7 +284,7 @@
   }
 
   /* Rive стили */
-  .rive-container {
+/*  .rive-container {
     width: 100%;
     height: 100%;
     display: flex;
@@ -340,7 +344,7 @@
 
   .rive-loading.hidden {
     display: none;
-  }
+  }*/
 
   .dialogue-content {
     position: absolute;

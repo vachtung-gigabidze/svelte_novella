@@ -3,7 +3,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Инициализация клиента Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
         autoRefreshToken: true,
         persistSession: true,
@@ -15,6 +15,15 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         }
     }
 })
+
+// Аутентификация через Edge Function
+ //{ data, error: invokeError } 
+ export async function getTmaAuthInvoke(initData){
+ await  supabase.functions.invoke(
+              "tma-auth",
+              { body: { initData } }
+      )
+    };
 
 // Функция для проверки подключения
 export async function checkSupabaseConnection() {
