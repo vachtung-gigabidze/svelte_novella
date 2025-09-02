@@ -22,7 +22,7 @@
 }
 
 .header {
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--tg-theme-bg-color, #000000);
     padding: 16px;
     display: flex;
     align-items: center;
@@ -54,14 +54,14 @@
     font-weight: 600;
     font-size: 14px;
     margin: 0 0 2px 0;
-    color: #ffffff;
+    color: var(--tg-theme-text-color, #ffffff);
 }
 
 .user-meta {
     font-size: 12px;
     opacity: 0.7;
     margin: 0;
-    color: #cccccc;
+     color: var(--tg-theme-text-color, #ffffff);
 }
 
 .dialogues-container {
@@ -80,7 +80,7 @@
 
 .nav-button {
     background: rgba(139, 0, 0, 0.3);
-    color: white;
+     color: var(--tg-theme-text-color, #ffffff);
     border: none;
     padding: 12px 20px;
     border-radius: 25px;
@@ -125,7 +125,7 @@
     text-align: center;
     padding: 60px 20px;
     font-size: 16px;
-    color: #ffffff;
+     color: var(--tg-theme-text-color, #ffffff);
 }
 
 .error {
@@ -152,14 +152,14 @@
     font-size: 28px;
     font-weight: 600;
     margin: 0 0 16px 0;
-    color: #ffffff;
+     color: var(--tg-theme-text-color, #ffffff);
 }
 
 .welcome-text {
     font-size: 16px;
     opacity: 0.8;
     margin: 0 0 32px 0;
-    color: #cccccc;
+     color: var(--tg-theme-text-color, #ffffff);
 }
 
 .button {
@@ -183,4 +183,9 @@
     color: #ff3b30;
     padding: 8px 16px;
     font-size: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
 }

@@ -103,12 +103,12 @@
     </div> -->
   {:else if user && session}
     <!-- Шапка -->
-    <div class="header">
+    <div class="header row">
       <div class="user-avatar">
         {#if user.user_metadata?.first_name}
-          {user.user_metadata.first_name[0]}
+          '🍎'
         {:else}
-          U
+          '🍎'
         {/if}
       </div>
       <div class="user-info">
