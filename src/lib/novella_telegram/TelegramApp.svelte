@@ -94,9 +94,8 @@
   {#if isLoading}
     <div class="loading">
       <p>Загрузка...</p>
-    </div>
-    <p>{JSON.stringify(user)}</p>
-    <Main></Main>
+    </div>   
+    <!-- <Main></Main> -->
     <!-- {:else if error}
     <div class="error">
       {error}
@@ -152,9 +151,9 @@
       </button>
     </div>
   {/if}
-  {#if error}
+  <!-- {#if error}
     <div class="error">
       {error}
     </div>
-  {/if}
+  {/if} -->
 </div>

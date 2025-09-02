@@ -15,6 +15,7 @@
 }
 
 .app {
+    background: var(--tg-theme-bg-color, #000000);
     min-height: 100vh;
     padding: 0;
     max-width: 100%;
