@@ -41,7 +41,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--tg-theme-text-color, #ffffff);
     font-weight: bold;
     font-size: 16px;
 }
@@ -61,7 +61,7 @@
     font-size: 12px;
     opacity: 0.7;
     margin: 0;
-     color: var(--tg-theme-text-color, #ffffff);
+    color: var(--tg-theme-text-color, #ffffff);
 }
 
 .dialogues-container {
@@ -80,7 +80,7 @@
 
 .nav-button {
     background: rgba(139, 0, 0, 0.3);
-     color: var(--tg-theme-text-color, #ffffff);
+    color: var(--tg-theme-text-color, #ffffff);
     border: none;
     padding: 12px 20px;
     border-radius: 25px;
@@ -125,7 +125,7 @@
     text-align: center;
     padding: 60px 20px;
     font-size: 16px;
-     color: var(--tg-theme-text-color, #ffffff);
+    color: var(--tg-theme-text-color, #ffffff);
 }
 
 .error {
@@ -152,14 +152,14 @@
     font-size: 28px;
     font-weight: 600;
     margin: 0 0 16px 0;
-     color: var(--tg-theme-text-color, #ffffff);
+    color: var(--tg-theme-text-color, #ffffff);
 }
 
 .welcome-text {
     font-size: 16px;
     opacity: 0.8;
     margin: 0 0 32px 0;
-     color: var(--tg-theme-text-color, #ffffff);
+    color: var(--tg-theme-text-color, #ffffff);
 }
 
 .button {
@@ -186,6 +186,10 @@
 }
 
 .row {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
+}
+
+.row>div {
+    display: flex;
 }
