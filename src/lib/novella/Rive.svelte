@@ -1,10 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import * as rive from "@rive-app/canvas";
-  import {defaultAssetsUrl, } from '../store/store.svelte'
-    // import { createSignedUrl } from "../supabaseClient";
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL_FILE;
-  const bucketName = 'dracula';
+  import {bucketName, supabaseUrlFile} from '../store/store.svelte'
   let { fileName } = $props();
   // let isJumpingInput = $state();
   let canvas = $state();
@@ -15,7 +12,7 @@
    // console.log( `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`);
     // Create the Rive instance
     const riveInstance = new rive.Rive({
-      src:  `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`,//`${defaultAssetsUrl}${fileName}`,
+      src:  `${supabaseUrlFile}/storage/v1/object/public/${bucketName}/${fileName}`,//`${defaultAssetsUrl}${fileName}`,
       canvas,
       autoplay: true,
       stateMachines: "SM1",
@@ -34,7 +31,7 @@
    
     // Create the Rive instance
     const riveInstance = new rive.Rive({
-      src:  `https://${supabaseUrl}.supabase.co/storage/v1/object/public/[bucket]/${fileName}`,//`${defaultAssetsUrl}${fileName}`,
+      src:  `https://${supabaseUrlFile}.supabase.co/storage/v1/object/public/[bucket]/${fileName}`,//`${defaultAssetsUrl}${fileName}`,
       canvas,
       autoplay: true,
       stateMachines: "SM1",

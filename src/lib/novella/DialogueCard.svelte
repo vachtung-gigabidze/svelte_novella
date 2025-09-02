@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import Rive from "./Rive.svelte";
-  import {defaultAssetsUrl} from '../store/store.svelte'
+  import {bucketName, supabaseUrlFile} from '../store/store.svelte'
   let { index, dialogue } = $props();
 
   let backgroundImageUrl = $state(null);
@@ -20,7 +20,7 @@
           if (dialogue.backgroundImage.endsWith(".riv")) {
            // await loadRiveAnimation(dialogue.backgroundImage, "background");
           } else {
-            backgroundImageUrl = `${defaultAssetsUrl}${dialogue.backgroundImage}`;
+            backgroundImageUrl =`${supabaseUrlFile}/storage/v1/object/public/${bucketName}/${dialogue.backgroundImage}`; // `${defaultAssetsUrl}${dialogue.backgroundImage}`;
             await testImage(backgroundImageUrl);
           }
         } catch (err) {
@@ -35,7 +35,7 @@
           if (dialogue.characterImage.endsWith(".riv")) {
             //await loadRiveAnimation(dialogue.characterImage, "character");
           } else {
-            characterImageUrl = `${defaultAssetsUrl}${dialogue.characterImage}`;
+            characterImageUrl = `${supabaseUrlFile}/storage/v1/object/public/${bucketName}/${dialogue.characterImage}`;
             await testImage(characterImageUrl);
           }
         } catch (err) {

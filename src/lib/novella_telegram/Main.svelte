@@ -14,7 +14,7 @@
   let error = $state('')
   let dialogues = $state([])
   let currentDialogueIndex = $state(0)
-  setContext('defaultAssetsUrl', '/svelte_novella/assets/')
+  // setContext('defaultAssetsUrl', '/svelte_novella/assets/')
   // Инициализация приложения
   onMount(async () => {
     try {
