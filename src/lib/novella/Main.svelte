@@ -149,7 +149,7 @@
     <div class="dialogues-container" onclick={()=>nextDialogue()}>
       <DialogueCard index={currentDialogueIndex} dialogue={dialogues[currentDialogueIndex]} />
 
-      <!-- Навигация -->
+      <!-- Навигация
       <div class="dots-navigation">
         {#each dialogues as _, index}
           <div
@@ -178,7 +178,7 @@
 
       <div class="progress-info">
         Сцена {currentDialogueIndex + 1} из {dialogues.length}
-      </div>
+      </div> -->
     </div>
   {:else}
     <!-- Экран приветствия -->

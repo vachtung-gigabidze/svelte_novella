@@ -441,14 +441,14 @@
         cursor: not-allowed;
     }
 
-    .debug-info {
+    /* .debug-info {
         margin-top: 20px;
         padding-top: 20px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
         font-size: 12px;
         color: #666;
         text-align: center;
-    }
+    } */
 
     @keyframes spin {
         0% { transform: rotate(0deg); }

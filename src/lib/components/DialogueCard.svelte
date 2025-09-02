@@ -259,14 +259,14 @@
         z-index: 10;
     }
 
-    .loading-spinner {
+    /* .loading-spinner {
         width: 40px;
         height: 40px;
         border: 3px solid rgba(255, 255, 255, 0.3);
         border-top: 3px solid #8b0000;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-    }
+    } */
 
     .error-overlay {
         position: absolute;

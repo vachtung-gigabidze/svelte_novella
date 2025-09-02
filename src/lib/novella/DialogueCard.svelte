@@ -152,7 +152,7 @@
     </div>
   {/if}
 
-  <!-- Отладочная информация -->
+  <!-- //Отладочная информация
   {#if import.meta.env.DEV}
     <div class="debug-info">
       <p>BG: {dialogue.backgroundImage || "нет"}</p>
@@ -160,7 +160,7 @@
       <p>State Machine: {dialogue.stateMachineBackgroundRive || "нет"}</p>
       <p>Trigger: {dialogue.smTriggerBackgroundRive || "нет"}</p>
     </div>
-  {/if}
+  {/if} -->
 </div>
 
 <style>
@@ -323,7 +323,7 @@
     box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
   }
 
-  .loading-overlay {
+  /* .loading-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -337,16 +337,16 @@
     z-index: 10;
     color: white;
     gap: 16px;
-  }
+  } */
 
-  .loading-spinner {
+  /* .loading-spinner {
     width: 40px;
     height: 40px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-top: 3px solid #8b0000;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-  }
+  } */
 
   .error-overlay {
     position: absolute;
@@ -362,7 +362,7 @@
     font-size: 12px;
   }
 
-  .debug-info {
+  /* .debug-info {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -372,7 +372,7 @@
     font-size: 10px;
     color: #ccc;
     z-index: 4;
-  }
+  } */
 
   .hidden {
     display: none !important;
