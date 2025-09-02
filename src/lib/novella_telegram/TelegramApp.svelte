@@ -93,6 +93,7 @@
     <div class="loading">
       <p>Загрузка...</p>
     </div>
+    <Main></Main>
   <!-- {:else if error}
     <div class="error">
       {error}
