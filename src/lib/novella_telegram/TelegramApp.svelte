@@ -25,7 +25,7 @@
         const { data: userData } = await supabase.auth.getUser();
         user = userData?.user;
       }
-      isLoading = true;
+      isLoading = false;
     } catch (err) {
       error = "Ошибка инициализации: " + err.message;
     } finally {
@@ -60,7 +60,7 @@
         refresh_token: data.refresh_token,
       };
 
-      isLoading = true;
+      isLoading = false;
     } catch (err) {
       error = "Ошибка авторизации: " + err.message;
       console.error("Auth error:", err);
