@@ -20,12 +20,12 @@
       // Проверяем существующую сессию
       const { data: sessionData } = await supabase.auth.getSession();
       session = sessionData?.session;
-      error = 'sessionData?.session';
+      error = "sessionData?.session";
       if (session) {
         const { data: userData } = await supabase.auth.getUser();
         user = userData?.user;
         isLoading = false;
-        error = 'userData?.user';
+        error = "userData?.user";
       }
     } catch (err) {
       error = "Ошибка инициализации: " + err.message;
@@ -43,8 +43,10 @@
       const initData = tg.initData;
       if (!initData) throw new Error("Telegram init data not available");
 
-      const { data, error: invokeError } = await getTmaAuthInvoke(initData);
-
+      //const { data, error: invokeError } = await getTmaAuthInvoke(initData);
+      const { data, error } = await supabase.functions.invoke("tma-auth", {
+        body: { initData },
+      });
       if (invokeError) throw invokeError;
 
       const { error: authError } = await supabase.auth.setSession({
@@ -88,14 +90,14 @@
   });
 </script>
 
-<div class="app">
+<div>
   {#if isLoading}
     <div class="loading">
       <p>Загрузка...</p>
     </div>
     <p>{JSON.stringify(user)}</p>
     <Main></Main>
-  <!-- {:else if error}
+    <!-- {:else if error}
     <div class="error">
       {error}
     </div> -->
@@ -126,7 +128,6 @@
     </div>
 
     <Main />
-  
   {:else}
     <!-- Аутентификация -->
     <div class="auth-section">
@@ -151,9 +152,9 @@
       </button>
     </div>
   {/if}
-    {#if error}
+  {#if error}
     <div class="error">
       {error}
     </div>
-    {/if}
+  {/if}
 </div>
