@@ -20,12 +20,13 @@
       // Проверяем существующую сессию
       const { data: sessionData } = await supabase.auth.getSession();
       session = sessionData?.session;
-
+      error = 'sessionData?.session';
       if (session) {
         const { data: userData } = await supabase.auth.getUser();
         user = userData?.user;
+        isLoading = false;
+        error = 'userData?.user';
       }
-      isLoading = false;
     } catch (err) {
       error = "Ошибка инициализации: " + err.message;
     } finally {
@@ -92,10 +93,10 @@
     <div class="loading">
       <p>Загрузка...</p>
     </div>
-  {:else if error}
+  <!-- {:else if error}
     <div class="error">
       {error}
-    </div>
+    </div> -->
   {:else if user && session}
     <!-- Шапка -->
     <div class="header">
@@ -123,36 +124,7 @@
     </div>
 
     <Main />
-    <!-- Карусель диалогов -->
-    <!-- <div class="dialogues-container">
-      {#if dialogues.length > 0}
-        <DialogueCard {dialogue} />
-
-       
-        <div class="dots-navigation">
-          {#each dialogues as _, index}
-            <div
-                    class="dot {index === currentDialogueIndex ? 'active' : ''}"
-                    onclick={() => goToDialogue(index)}
-            />
-          {/each}
-        </div>
-
-        <div class="navigation">
-          <button class="nav-button" onclick={prevDialogue} disabled={currentDialogueIndex === 0}>
-            ← Назад
-          </button>
-          <button class="nav-button" onclick={nextDialogue} disabled={currentDialogueIndex === dialogues.length - 1}>
-            Вперед →
-          </button>
-        </div>
-
-      {:else}
-        <div class="loading">
-          <p>Загрузка диалогов...</p>
-        </div>
-      {/if}
-    </div> -->
+  
   {:else}
     <!-- Аутентификация -->
     <div class="auth-section">
