@@ -44,7 +44,7 @@
       if (!initData) throw new Error("Telegram init data not available");
 
       //const { data, error: invokeError } = await getTmaAuthInvoke(initData);
-      const { data, error } = await supabase.functions.invoke("tma-auth", {
+      const { data, error: invokeError } = await supabase.functions.invoke("tma-auth", {
         body: { initData },
       });
       if (invokeError) throw invokeError;
