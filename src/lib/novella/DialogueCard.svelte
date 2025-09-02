@@ -1,22 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import Rive from "./Rive.svelte";
-  import {defaultAssetsUrl} from './store.svelte'
+  import {defaultAssetsUrl} from '../store/store.svelte'
   let { index, dialogue } = $props();
 
   let backgroundImageUrl = $state(null);
   let characterImageUrl = $state(null);
 
   let errorMedia = $state(null);
-  // Динамический импорт Rive
-  onMount(async () => {
-    // try {
-    //   RiveRuntime = await import("rive-js");
-    // } catch (err) {
-    //   console.error("Failed to load Rive runtime:", err);
-    //   errorMedia = "Не удалось загрузить анимацию";
-    // }
-  });
 
   // Загрузка медиа-файлов из /assets/
   async function loadMediaFiles() {
@@ -65,67 +56,6 @@
     } finally {
     }
   }
-
-  // // Загрузка Rive анимации
-  // async function loadRiveAnimation(filename, type) {
-  //   try {
-  //     const response = await fetch(`/assets/${filename}`);
-  //     if (!response.ok) throw new Error("Rive file not found");
-
-  //     const arrayBuffer = await response.arrayBuffer();
-
-  //     // Создаем canvas для анимации
-  //     const canvasId = `${type}-rive-canvas`;
-  //     let canvas = document.getElementById(canvasId);
-
-  //     if (!canvas) {
-  //       canvas = document.createElement("canvas");
-  //       canvas.id = canvasId;
-  //       canvas.className = `rive-canvas ${type}-rive`;
-  //       canvas.width = type === "background" ? 800 : 400;
-  //       canvas.height = type === "background" ? 600 : 400;
-
-  //       const container = document.createElement("div");
-  //       container.className = `rive-container ${type}-rive-container`;
-  //       container.appendChild(canvas);
-
-  //       if (type === "background") {
-  //         document.querySelector(".background-media")?.appendChild(container);
-  //       } else {
-  //         document.querySelector(".character-media")?.appendChild(container);
-  //       }
-  //     }
-
-  //     // Применяем state machine если указана
-  //     if (dialogue.stateMachineBackgroundRive && type === "background") {
-  //       setTimeout(() => {
-  //         try {
-  //         } catch (err) {
-  //           console.warn(
-  //             "State machine not found:",
-  //             dialogue.stateMachineBackgroundRive
-  //           );
-  //         }
-  //       }, 100);
-  //     }
-
-  //     // Запускаем триггер если указан
-  //     if (dialogue.smTriggerBackgroundRive && type === "background") {
-  //       setTimeout(() => {
-  //         try {
-  //         } catch (err) {
-  //           console.warn(
-  //             "Trigger not found:",
-  //             dialogue.smTriggerBackgroundRive
-  //           );
-  //         }
-  //       }, 200);
-  //     }
-  //   } catch (err) {
-  //     console.error("Rive loading error:", err);
-  //     throw err;
-  //   }
-  // }
 
   // Функция для проверки доступности изображения
   function testImage(url) {

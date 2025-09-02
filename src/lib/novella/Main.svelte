@@ -1,8 +1,9 @@
 <script>
   import { onMount } from "svelte";
   import DialogueCard from "./DialogueCard.svelte";
-  import {defaultAssetsUrl} from './store.svelte'
-
+  import {defaultAssetsUrl} from '../store/store.svelte'
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL_FILE;
+  const bucketName = 'dracula';
   let user = $state({ name: "Игрок" });
   let isLoading = $state(true);
   let error = $state("");
@@ -24,9 +25,9 @@
   // Загрузка диалогов из /assets/dracula_story.json
   async function loadDialogues() {
     try {
-      console.log(`${defaultAssetsUrl}dracula_story.json`);
+      //console.log(`${defaultAssetsUrl}dracula_story.json`);
 
-      const response = await fetch(`${defaultAssetsUrl}dracula_story.json`);
+      const response = await fetch(`${supabaseUrl}/storage/v1/object/public/${bucketName}/dracula_story.json`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
