@@ -106,9 +106,9 @@
     <div class="header row">
       <div class="user-avatar">
         {#if user.user_metadata?.first_name}
-          '🍎'
+          🧛‍♂️
         {:else}
-          '🍎'
+          💩
         {/if}
       </div>
       <div class="user-info">
