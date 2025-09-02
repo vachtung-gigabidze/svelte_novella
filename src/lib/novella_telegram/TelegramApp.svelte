@@ -28,6 +28,7 @@
         user = userData?.user
        
       }
+      isLoading = true;
     } catch (err) {
       error = 'Ошибка инициализации: ' + err.message
     } finally {
@@ -59,7 +60,7 @@
       user = userData?.user
       session = { access_token: data.access_token, refresh_token: data.refresh_token }
 
-
+ isLoading = true;
     } catch (err) {
       error = "Ошибка авторизации: " + err.message
       console.error('Auth error:', err)
