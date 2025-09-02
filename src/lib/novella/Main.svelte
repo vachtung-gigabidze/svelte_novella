@@ -71,20 +71,21 @@
 
   // Навигация
   function nextDialogue() {
-    if (currentDialogueIndex < dialogues.length - 1) {
+    //Если нет вариантов перехода и не конец
+    if (dialogues[currentDialogueIndex].options.length < 1 && currentDialogueIndex < dialogues.length - 1) {
       currentDialogueIndex++;
     }
   }
 
-  function prevDialogue() {
-    if (currentDialogueIndex > 0) {
-      currentDialogueIndex--;
-    }
-  }
+  // function prevDialogue() {
+  //   if (currentDialogueIndex > 0) {
+  //     currentDialogueIndex--;
+  //   }
+  // }
 
-  function goToDialogue(index) {
-    currentDialogueIndex = index;
-  }
+  // function goToDialogue(index) {
+  //   currentDialogueIndex = index;
+  // }
 
   function restartStory() {
     currentDialogueIndex = 0;
