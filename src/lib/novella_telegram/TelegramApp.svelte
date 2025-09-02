@@ -20,12 +20,12 @@
       // Проверяем существующую сессию
       const { data: sessionData } = await supabase.auth.getSession();
       session = sessionData?.session;
-      error = "sessionData?.session";
+     
       if (session) {
         const { data: userData } = await supabase.auth.getUser();
         user = userData?.user;
         isLoading = false;
-        error = "userData?.user";
+        
       }
     } catch (err) {
       error = "Ошибка инициализации: " + err.message;
