@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
   import { onMount } from "svelte";
   import DialogueCard from "./DialogueCard.svelte";
   import {bucketName, supabaseUrlFile} from '../store/store.svelte'
@@ -11,7 +13,7 @@
   // Инициализация приложения
   onMount(async () => {
     try {
-      await loadDialogues();
+      await loadDialogues( `${supabaseUrlFile}/storage/v1/object/public/${bucketName}/dracula_story.json`);
     } catch (err) {
       error = "Ошибка загрузки истории: " + err.message;
       console.error("Load error:", err);
@@ -21,11 +23,12 @@
   });
 
   // Загрузка диалогов из /assets/dracula_story.json
-  async function loadDialogues() {
+  async function loadDialogues(dialogLink) {
+   
     try {
       //console.log(`${defaultAssetsUrl}dracula_story.json`);
 
-      const response = await fetch(`${supabaseUrlFile}/storage/v1/object/public/${bucketName}/dracula_story.json`);
+      const response = await fetch(dialogLink);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -42,7 +45,7 @@
       dialogues = storyData.dialogues;
       console.log("Диалоги загружены:", dialogues.length);
     } catch (err) {
-      error = "Ошибка загрузки истории: " + err.message;
+      error = `Ошибка загрузки диалогов: Из ${dialogLink} ${err.message}`;
       console.error("Load dialogues error:", err);
       throw err;
     }

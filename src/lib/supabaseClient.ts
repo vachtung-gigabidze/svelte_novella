@@ -16,7 +16,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     }
 })
 
-export async function createSignedUrl(fileName){
+
+export async function createSignedUrl(fileName: string){
         const { data, error } = await supabase.storage
       .from(bucketName)
       .createSignedUrl(fileName, 3600); 
@@ -28,7 +29,10 @@ export async function createSignedUrl(fileName){
 
 // Аутентификация через Edge Function
  //{ data, error: invokeError } 
- export async function getTmaAuthInvoke(initData){
+ /**
+ * @param {any} initData
+ */
+ export async function getTmaAuthInvoke(initData: any){
  await  supabase.functions.invoke(
               "tma-auth",
               { body: { initData } }
@@ -50,18 +54,18 @@ export async function checkSupabaseConnection() {
 }
 
 // Sign up a new user
-export async function signUp(email, password) {
+export async function signUp(email: any, password: any) {
     const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
     });
     return data
-    if (error) console.error('Error signing up:', error.message);
-    else console.log('User signed up:', data.user);
+    //if (error) console.error('Error signing up:', error.message);
+    //else console.log('User signed up:', data.user);
 }
 
 // Sign in a user
-export async function signIn(email, password) {
+export async function signIn(email: any, password: any) {
     const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
