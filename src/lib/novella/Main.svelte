@@ -24,7 +24,7 @@
   });
 
   // Загрузка диалогов из /assets/dracula_story.json
-  async function loadDialogues(dialogLink) {
+  async function loadDialogues() {
    
     try {
       //console.log(`${defaultAssetsUrl}dracula_story.json`);
