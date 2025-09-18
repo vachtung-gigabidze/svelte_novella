@@ -9,11 +9,12 @@
   let error = $state("");
   let dialogues = $state([]);
   let currentDialogueIndex = $state(0);
+  let dialogLink = `${supabaseUrlFile}/storage/v1/object/public/${bucketName}/dracula_story.json`
   //setContext('defaultAssetsUrl', '/assets/');///svelte_novella
   // Инициализация приложения
   onMount(async () => {
     try {
-      await loadDialogues( `${supabaseUrlFile}/storage/v1/object/public/${bucketName}/dracula_story.json`);
+      await loadDialogues( );
     } catch (err) {
       error = "Ошибка загрузки истории: " + err.message;
       console.error("Load error:", err);
