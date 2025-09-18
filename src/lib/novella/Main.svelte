@@ -147,7 +147,8 @@
     </div> -->
 
     <!-- Карусель диалогов -->
-    <div class="dialogues-container" onclick={()=>nextDialogue()}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div class="dialogues-container" role="button" tabindex="0" aria-label="Next" onclick={()=>nextDialogue()}>
       <DialogueCard index={currentDialogueIndex} dialogue={dialogues[currentDialogueIndex]} />
 
       <!-- Навигация
