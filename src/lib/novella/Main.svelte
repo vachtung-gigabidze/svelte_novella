@@ -25,8 +25,12 @@
 
   // Загрузка диалогов из /assets/dracula_story.json
   async function loadDialogues() {
-   
+    
     try {
+      if (window.webkit && window.webkit.messageHandlers) {
+            window.webkit.messageHandlers.messageAppHandler.postMessage(`load dialog from: ${dialogLink}`);
+            
+      }
       //console.log(`${defaultAssetsUrl}dracula_story.json`);
 
       const response = await fetch(dialogLink);
